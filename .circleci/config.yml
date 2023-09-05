@@ -22,6 +22,3 @@ workflows:
           filters:
             branches:
               only: master
-          notifications:
-            on_success: false
-            on_failure: false
