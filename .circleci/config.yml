@@ -7,6 +7,7 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project
+      - run: ls -la
       - run:
           command: |
             javac -d target services/app1/src/main/java/com/example/App1.java
