@@ -23,4 +23,5 @@ workflows:
             branches:
               only: master
           notifications:
-            email: false
+            on_success: false
+            on_failure: false
