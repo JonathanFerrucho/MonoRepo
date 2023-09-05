@@ -11,7 +11,8 @@ jobs:
       - run:
           command: |
             javac -d target services/app1/src/main/java/com/example/App1.java
-            java -cp target/app-1.0-SNAPSHOT.jar App1
+            jar cvf App1.jar target/App1.class
+            java -jar target/prueba.jar
       - run: ls -la target/
 
 workflows:
