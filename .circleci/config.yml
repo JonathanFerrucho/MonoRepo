@@ -3,16 +3,13 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:11-jdk
+      - image: circleci/python:3.8
     steps:
       - checkout:
           path: /home/circleci/project
-      - run: ls -la
       - run:
           command: |
-            javac -d target services/app1/src/main/java/com/example/App1.java
-            jar cvf target/App1.jar target/App1.class
-      - run: ls -la target/
+            python services/app1/App1.py
 
 workflows:
   build-and-test:
