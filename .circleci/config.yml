@@ -1,13 +1,22 @@
 version: 2.1
 
 jobs:
-  saluda:
+  build:
     docker:
-      - image : cimg/base:stable
+      - image: circleci/openjdk:11-jdk
     steps:
-      - run: echo hola
+     - run: echo inicio job app1
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            javac -d target services/app1/src/main/java/com/example/App1.java
+            java -cp target/app-1.0-SNAPSHOT.jar com.example.App1
 
 workflows:
-  hello:
+  build-and-test:
     jobs:
-      - saluda
+      - build:
+          filters:
+            branches:
+              only: master
