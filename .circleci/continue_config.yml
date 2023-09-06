@@ -43,21 +43,21 @@ jobs:
 
 
 workflows:
-  buildApp1:
+  buildTestApp1:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
       - build-App1:
           filters:
             branches:
               only: master
-  buildApp2:
+  buildTestApp2:
     when: << pipeline.parameters.run-build-app-2-job >>
     jobs:
       - build-App2:
           filters:
             branches:
               only: master
-  buildApp2:
+  buildTestApp3:
     when: << pipeline.parameters.run-build-app-3-job >>
     jobs:
       - build-App3:
