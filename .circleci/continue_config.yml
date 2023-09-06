@@ -46,24 +46,15 @@ workflows:
   buildTestApp1:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
-      - build-App1:
-          filters:
-            branches:
-              only: master
+      - build-App1
   buildTestApp2:
     when: << pipeline.parameters.run-build-app-2-job >>
     jobs:
-      - build-App2:
-          filters:
-            branches:
-              only: master
+      - build-App2
   buildTestApp3:
     when: << pipeline.parameters.run-build-app-3-job >>
     jobs:
-      - build-App3:
-          filters:
-            branches:
-              only: master
+      - build-App3
 
   # # when pipeline parameter, run-build-service-1-job OR
   # # run-build-service-2-job is true, run-integration-tests job is
