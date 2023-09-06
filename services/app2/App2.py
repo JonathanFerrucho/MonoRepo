@@ -1,1 +1,1 @@
-print("Script App 2 Test")
+print("Script App 2")
