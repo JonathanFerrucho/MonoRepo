@@ -1,0 +1,71 @@
+version: 2.1
+
+parameters:
+  run-build-app-1-job:
+    type: boolean
+    default: false
+  run-build-app-2-job:
+    type: boolean
+    default: false
+  run-build-app-3-job:
+    type: boolean
+    default: false
+
+
+jobs:
+  build-App1:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app1/App1.py
+  build-App2:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app2/App2.py
+  build-App3:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app3/App3.py
+
+
+workflows:
+  buildApp1:
+    when: << pipeline.parameters.run-build-app-1-job >>
+    jobs:
+      - build-App1:
+  buildApp2:
+    when: << pipeline.parameters.run-build-app-2-job >>
+    jobs:
+      - build-App2:  
+  buildApp2:
+    when: << pipeline.parameters.run-build-app-3-job >>
+    jobs:
+      - build-App3:  
+
+  # # when pipeline parameter, run-build-service-1-job OR
+  # # run-build-service-2-job is true, run-integration-tests job is
+  # # triggered. see:
+  # # https://circleci.com/docs/configuration-reference/#logic-statements
+  # # for more information.
+  # run-integration-tests:
+  #   when:
+  #     or: [<< pipeline.parameters.run-build-service-1-job >>, << pipeline.parameters.run-build-service-2-job >>]
+  #   jobs:
+  #     - maven/test:
+  #         name: run-integration-tests
+  #         command: '-X verify'
+  #         app_src_directory: 'tests'
