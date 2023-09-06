@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build:
+  build-App1:
     docker:
       - image: circleci/python:3.8
     steps:
@@ -10,11 +10,41 @@ jobs:
       - run:
           command: |
             python services/app1/App1.py
+  build-App2:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app2/App2.py
+  build-App3:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app3/App3.py
 
 workflows:
-  build-and-test:
+  build-App1:
     jobs:
-      - build:
+      - build-App1:
           filters:
             branches:
               only: master
+   build-App2:
+    jobs:
+      - build-App2:
+          filters:
+            branches:
+              only: master 
+   build-App3:
+    jobs:
+      - build-App3:
+          filters:
+            branches:
+              only: master 
