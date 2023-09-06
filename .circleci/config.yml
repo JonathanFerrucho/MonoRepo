@@ -14,5 +14,5 @@ workflows:
             services/app1/.* run-build-app-1-job true
             services/app2/.* run-build-app-2-job true
             services/app3/.* run-build-app-3-job true
-          # base-revision: master
+          base-revision: master
           config-path: .circleci/continue_config.yml
