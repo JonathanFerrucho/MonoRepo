@@ -1,50 +1,18 @@
 version: 2.1
 
-jobs:
-  build-App1:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app1/App1.py
-  build-App2:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app2/App2.py
-  build-App3:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app3/App3.py
+setup: true
+
+orbs:
+  path-filtering: circleci/path-filtering@0.1.1
 
 workflows:
-  buildApp1:
+  always-run:
     jobs:
-      - build-App1:
-          filters:
-            branches:
-              only: master
-  buildApp2:
-    jobs:
-      - build-App2:
-          filters:
-            branches:
-              only: master 
-  buildApp3:
-    jobs:
-      - build-App3:
-          filters:
-            branches:
-              only: master 
+      - path-filtering/filter:
+          name: check-updated-files
+          mapping: |
+            services/app1/.* run-build-app-1-job true
+            services/app2/.* run-build-app-2-job true
+            services/app3/.* run-build-app-3-job true
+          # base-revision: master
+          config-path: .circleci/continue_config.yml
