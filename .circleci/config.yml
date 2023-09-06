@@ -30,19 +30,19 @@ jobs:
             python services/app3/App3.py
 
 workflows:
-  build-App1:
+  buildApp1:
     jobs:
       - build-App1:
           filters:
             branches:
               only: master
-   build-App2:
+  buildApp2:
     jobs:
       - build-App2:
           filters:
             branches:
               only: master 
-   build-App3:
+  buildApp3:
     jobs:
       - build-App3:
           filters:
