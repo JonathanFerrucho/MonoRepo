@@ -14,12 +14,19 @@ parameters:
     default: false
 
 orbs:
-  path-filtering: circleci/path-filtering@0.1.1
+  continuation: circleci/continuation@0.1.2
+
+jobs:
+  setup:
+    executor: continuation/default
+    steps:
+      - checkout
+      - continuation/continue:
+          configuration_path: services/appa1/.circleci/config_app1.yml
+
 
 workflows:
-  always-run:
+  setup:
+    when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
-      - path-filtering/filter:
-          name: check-updated-files
-          base-revision: master
-          config-path: services/app1/.circleci/config_app1.yml
+      - setup
