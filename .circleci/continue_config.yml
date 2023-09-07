@@ -1,5 +1,7 @@
 version: 2.1
 
+setup: true
+
 parameters:
   run-build-app-1-job:
     type: boolean
@@ -10,8 +12,6 @@ parameters:
   run-build-app-3-job:
     type: boolean
     default: false
-
-setup: true
 
 orbs:
   path-filtering: circleci/path-filtering@0.1.1
