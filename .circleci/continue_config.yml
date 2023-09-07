@@ -14,14 +14,7 @@ parameters:
 
 jobs:
   build-App1:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app1/App1.py
+     config-path: services/app1/.circleci/config.yml
   build-App2:
     docker:
       - image: circleci/python:3.8
@@ -46,7 +39,7 @@ workflows:
   buildTestApp1:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
-      config-path: services/app1/.circleci/config.yml
+      - build-App1
   buildTestApp2:
     when: << pipeline.parameters.run-build-app-2-job >>
     jobs:
