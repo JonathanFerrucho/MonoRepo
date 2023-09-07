@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build-App1:
+  build-App1-interno:
     docker:
       - image: circleci/python:3.8
     steps:
@@ -12,6 +12,6 @@ jobs:
             python app1/App1.py
 
 workflows:
-  module-a-workflow:
+  buildTest2App1:
      jobs:
-      - build-App1
+      - build-App1-interno
