@@ -1,1 +1,1 @@
-print("Script App 1 interno")
+print("Script App 1 interndo")
