@@ -37,7 +37,7 @@ workflows:
   buildTestApp1:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
-     include: services/app1/.circleci/config_app1.yml
+     - include: services/app1/.circleci/config_app1.yml
   buildTestApp2:
     when: << pipeline.parameters.run-build-app-2-job >>
     jobs:
