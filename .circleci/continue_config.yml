@@ -10,50 +10,12 @@ parameters:
   run-build-app-3-job:
     type: boolean
     default: false
-
-
-jobs:
-  build-App1:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app1/App1.py
-  build-App2:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app2/App2.py
-  build-App3:
-    docker:
-      - image: circleci/python:3.8
-    steps:
-      - checkout:
-          path: /home/circleci/project
-      - run:
-          command: |
-            python services/app3/App3.py
-
+    
 
 workflows:
   buildTestApp1:
     when: << pipeline.parameters.run-build-app-1-job >>
     include: services/app1/.circleci/config_app1.yml
-  buildTestApp2:
-    when: << pipeline.parameters.run-build-app-2-job >>
-    jobs:
-      - build-App2
-  buildTestApp3:
-    when: << pipeline.parameters.run-build-app-3-job >>
-    jobs:
-      - build-App3
 
   # # when pipeline parameter, run-build-service-1-job OR
   # # run-build-service-2-job is true, run-integration-tests job is
