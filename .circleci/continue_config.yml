@@ -43,15 +43,8 @@ workflows:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
       - path-filtering/filter:
+          base-revision: master
           config-path: services/app1/.circleci/config_app1.yml
-  buildTestApp2:
-    when: << pipeline.parameters.run-build-app-2-job >>
-    jobs:
-      - build-App2
-  buildTestApp3:
-    when: << pipeline.parameters.run-build-app-3-job >>
-    jobs:
-      - build-App3
 
   # # when pipeline parameter, run-build-service-1-job OR
   # # run-build-service-2-job is true, run-integration-tests job is
