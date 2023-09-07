@@ -11,6 +11,11 @@ parameters:
     type: boolean
     default: false
 
+setup: true
+
+orbs:
+  path-filtering: circleci/path-filtering@0.1.1
+
 
 jobs:
   build-App2:
@@ -37,7 +42,8 @@ workflows:
   buildTestApp1:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
-      - include: services/app1/.circleci/config_app1.yml
+      - path-filtering/filter:
+          config-path: services/app1/.circleci/config_app1.yml
   buildTestApp2:
     when: << pipeline.parameters.run-build-app-2-job >>
     jobs:
