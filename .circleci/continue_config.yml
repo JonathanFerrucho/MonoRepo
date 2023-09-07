@@ -1,7 +1,5 @@
 version: 2.1
 
-setup: true
-
 parameters:
   run-build-app-1-job:
     type: boolean
