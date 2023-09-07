@@ -39,7 +39,7 @@ jobs:
 
 
 workflows:
-  buildTestApp1:
+  prueba:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
       - path-filtering/filter:
