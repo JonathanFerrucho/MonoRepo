@@ -1,0 +1,17 @@
+version: 2.1
+
+jobs:
+  build-App1:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python app1/App1.py
+
+workflows:
+  module-a-workflow:
+     jobs:
+      - build-App1
