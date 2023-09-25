@@ -1,97 +1,27 @@
 version: 2.1
 
-orbs:
-  slack: circleci/slack@4.12.5
-  aws-cli: circleci/aws-cli@4.0.0
-  envsubst: sawadashota/envsubst@1.1
-  terraform: circleci/terraform@3.1
+parameters:
+  run-build-app-1-job:
+    type: boolean
+    default: false
+  run-build-app-2-job:
+    type: boolean
+    default: false
+  run-build-app-3-job:
+    type: boolean
+    default: false
 
-commands:
-  deploy-step-function:
-    parameters:
-      env:
-        type: string
-      region:
-        type: string
-        default: AWS_REGION
-    steps:
-      - checkout
-      - run:
-          command: apk --no-cache add curl-dev
-      - aws-cli/setup:
-          profile_name: 'shared-services'
-          role_arn: '${AWS_SHARED_SERVICES_ROLE_ARN}'
-          region: '<< parameters.region >>'
-      - aws-cli/setup:
-          profile_name: '<< parameters.env >>'    
-          role_arn: '${AWS_ROLE_ARN}'
-          region: '<< parameters.region >>'
-      - run:
-          name: Deploy service
-          command: |
-            cd infrastructure
-            if [ << parameters.env >> = cgsand ];
-            then
-            aws s3 cp s3://terraform-tfvars-central/lbk-component-governance-<< parameters.env >>.tfvars . --profile shared-services
-            elif [ << parameters.env >> = cgprod ];
-            then
-            aws s3 cp s3://terraform-tfvars-central/tfvars-prod/lbk-component-governance-<< parameters.env >>.tfvars . --profile shared-services
-            fi
-            ls -lha
-            terraform init -upgrade && terraform workspace select << parameters.env >>
-            terraform apply -var-file lbk-component-governance-<< parameters.env >>.tfvars --auto-approve -target module.stfn_component_governance_workflow
-
-  update-lambda-function:
-    parameters:
-      env:
-        type: string
-      region:
-        type: string
-        default: AWS_REGION
-    steps:
-      - checkout
-      - aws-cli/setup:
-          profile_name: '<< parameters.env >>'    
-          role_arn: '${AWS_ROLE_ARN}'
-          region: '<< parameters.region >>'
-      - attach_workspace:
-          at: /home/circleci/project
-      - run:
-          name: Permission to deploy.sh
-          command: chmod +x .circleci/deploy.sh
-      - run:
-          name: Deploy lambda functions
-          environment:
-            REPLICATION: ""
-          command: sh .circleci/deploy.sh services
 
 jobs:
-  build:
+  build-App1:
     docker:
       - image: cimg/python:3.10.0
     steps:
-      - checkout
+      - checkout:
+          path: /home/circleci/project
       - run:
-          name: Add Permissions
           command: |
-            chmod +x services/*
-      - run:
-          name: Install Pip & Poetry
-          command: python3 -m pip install --upgrade pip setuptools wheel && pip install flake8 && pip install poetry
-      - run:
-          name: Compress with Poetry
-          command: sh .circleci/poetry_compress.sh
-      - run:
-          name: Create Zip
-          command: sh .circleci/compress.sh
-      - persist_to_workspace:
-          root: /home/circleci/project
-          paths:
-            - services
-            - .circleci
-            - infrastructure
-            - state_machines
-
+            python services/app1/App1.py
   test:
     docker:
       - image: cimg/python:3.10.0
@@ -103,201 +33,42 @@ jobs:
             chmod +x services/*
       - run:
           name: Install Pip & Poetry
-          command: python3 -m pip install --upgrade pip setuptools wheel && pip install poetry && pip install pytest && pip install pytest-cov && pip install mutut 
+          command: python3 -m pip install --upgrade pip setuptools wheel && pip install poetry && pip install pytest && pip install pytest-cov && pip install mutmut
       - run:
           name: Coverage test results
           command: sh .circleci/test.sh
-
-  update-lambda-cgsand:
-    executor:
-      name: 'aws-cli/default'
-    steps:
-      - update-lambda-function:
-          env: 'cgsand'
-
-  deploy-stf-cgsand:
-    executor:
-      name: 'terraform/default'
-      tag: '1.2.9'
-    resource_class: large
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - '6f:9e:50:5b:7b:10:94:db:e0:69:88:8b:da:ed:e0:3e'     
-      - deploy-step-function:
-          env: 'cgsand'
-
-  deploy-notification-cgsand:
+          
+  build-App2:
     docker:
-      - image: cibuilds/base:latest
+      - image: circleci/python:3.8
     steps:
-      - slack/notify:
-          channel: deployments-sion 
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": 
-                    {
-                      "type": "mrkdwn",
-                      "text": "Component governance lambda functions have been updated:\n*<https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}|New workflow deployed - cgsand>*"
-                    }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Environment:*\n`cgsand`"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job:*\nExecution"
-                    }
-                  ] 
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Reason:*\nlambda function update in AWS."
-                    }
-                  ] 
-                }
-              ]
-            }
-          event: always
-
-  update-lambda-cgprod:
-    executor:
-      name: 'aws-cli/default'
-    steps:
-      - update-lambda-function:
-          env: 'cgprod'
-
-  deploy-stf-cgprod:
-    executor:
-      name: 'terraform/default'
-      tag: '1.2.9'
-    resource_class: large
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - '6f:9e:50:5b:7b:10:94:db:e0:69:88:8b:da:ed:e0:3e'     
-      - deploy-step-function:
-          env: 'cgprod'
-
-  deploy-notification-cgprod:
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app2/App2.py
+  build-App3:
     docker:
-      - image: cibuilds/base:latest
+      - image: circleci/python:3.8
     steps:
-      - slack/notify:
-          channel: deployments-sion 
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": 
-                    {
-                      "type": "mrkdwn",
-                      "text": "Component governance lambda functions have been updated:\n*<https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}|New workflow deployed - cgprod>*"
-                    }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Environment:*\n`cgprod`"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job:*\nExecution"
-                    }
-                  ] 
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Reason:*\nlambda function update in AWS."
-                    }
-                  ] 
-                }
-              ]
-            }
-          event: always
+      - checkout:
+          path: /home/circleci/project
+      - run:
+          command: |
+            python services/app3/App3.py
+
 
 workflows:
-  Execution:
+  buildTestApp1:
+    when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
-      - build
+      - build-App1
       - test
-      - update-lambda-cgsand:
-          context: deploy-cgsand
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only: 
-                - /sandbox.*/
-                - master
-      - deploy-stf-cgsand:
-          context: deploy-cgsand
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only: 
-                - /sandbox.*/
-                - master
-      - deploy-notification-cgsand:
-          context: global-piso19
-          requires:
-            - update-lambda-cgsand
-            - deploy-stf-cgsand
-          filters:
-            branches:
-              only:
-                - /sandbox.*/
-                - master
-      - hold-cgprod:
-          type: approval
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only:
-                - /release.*/
-      - update-lambda-cgprod:
-          context: deploy-cgprod
-          requires:
-            - hold-cgprod
-          filters:
-            branches:
-              only: 
-                - /release.*/
-      - deploy-stf-cgprod:
-          context: deploy-cgprod
-          requires:
-            - hold-cgprod
-          filters:
-            branches:
-              only: 
-                - /release.*/
-      - deploy-notification-cgprod:
-          context: global-piso19
-          requires:
-            - update-lambda-cgprod
-            - deploy-stf-cgprod
-          filters:
-            branches:
-              only:
-                - /release.*/
+  buildTestApp2:
+    when: << pipeline.parameters.run-build-app-2-job >>
+    jobs:
+      - build-App2
+  buildTestApp3:
+    when: << pipeline.parameters.run-build-app-3-job >>
+    jobs:
+      - build-App3
