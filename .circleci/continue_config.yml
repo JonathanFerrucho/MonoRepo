@@ -33,8 +33,7 @@ jobs:
             chmod +x services/*
       - run:
           name: Install Pip & Poetry
-          command: python3 -m pip install --upgrade pip setuptools wheel && pip install flake8 && pip install poetry && pip install pytest && pip install pytest-cov
-          command: pip install mutmut
+          command: python3 -m pip install --upgrade pip setuptools wheel && pip install flake8 && pip install poetry && pip install pytest && pip install pytest-cov && pip install mutmut
       - run:
           name: Coverage test results
           command: mutmut run
@@ -72,17 +71,3 @@ workflows:
     when: << pipeline.parameters.run-build-app-3-job >>
     jobs:
       - build-App3
-
-  # # when pipeline parameter, run-build-service-1-job OR
-  # # run-build-service-2-job is true, run-integration-tests job is
-  # # triggered. see:
-  # # https://circleci.com/docs/configuration-reference/#logic-statements
-  # # for more information.
-  # run-integration-tests:
-  #   when:
-  #     or: [<< pipeline.parameters.run-build-service-1-job >>, << pipeline.parameters.run-build-service-2-job >>]
-  #   jobs:
-  #     - maven/test:
-  #         name: run-integration-tests
-  #         command: '-X verify'
-  #         app_src_directory: 'tests'
