@@ -63,6 +63,7 @@ workflows:
     when: << pipeline.parameters.run-build-app-1-job >>
     jobs:
       - build-App1
+      - test
   buildTestApp2:
     when: << pipeline.parameters.run-build-app-2-job >>
     jobs:
