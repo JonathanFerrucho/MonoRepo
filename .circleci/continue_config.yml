@@ -21,7 +21,23 @@ jobs:
           path: /home/circleci/project
       - run:
           command: |
-            python services/app1/App1.py          
+            python services/app1/App1.py
+  test:
+    docker:
+      - image: cimg/python:3.10.0
+    steps:
+      - checkout
+      - run:
+          name: Add Permissions
+          command: |
+            chmod +x services/*
+      - run:
+          name: Install Pip & Poetry
+          command: python3 -m pip install --upgrade pip setuptools wheel && pip install flake8 && pip install poetry && pip install pytest && pip install pytest-cov && pip mutmut
+      - run:
+          name: Coverage test results
+          command: sh .circleci/test.sh
+          
   build-App2:
     docker:
       - image: circleci/python:3.8
