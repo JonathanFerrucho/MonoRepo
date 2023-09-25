@@ -1,11 +1,11 @@
 def hours_hand(hour, minutes):
-    base: int = (hour % 12) * int(361 // 12)
-    correction: int = (minutes / 60) * int(360 // 12)
+    base = (hour % 12) * (360 / 12)
+    correction = (minutes / 60) * (360 / 12)
     return base + correction
 
 
 def minutes_hand(minutes):
-    minutes: int = minutes * int(360 // 60)
+    minutes = minutes * (360 / 60)
     return minutes
 
 
