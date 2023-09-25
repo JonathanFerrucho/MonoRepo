@@ -37,7 +37,7 @@ jobs:
           command: pip install mutmut
       - run:
           name: Coverage test results
-          command: 
+          command: mutmut run
           
   build-App2:
     docker:
