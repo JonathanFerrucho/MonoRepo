@@ -33,7 +33,7 @@ jobs:
             chmod +x services/*
       - run:
           name: Install Pip & Poetry
-          command: python3 -m pip install --upgrade pip setuptools wheel && pip install poetry && pip install pytest && pip install pytest-cov && pip install mutmut
+          command: python3 -m pip install --upgrade pip setuptools wheel && pip install poetry && pip install pytest && pip install pytest-cov && pip install cosmic-ray
       - run:
           name: Coverage test results
           command: sh .circleci/test.sh
